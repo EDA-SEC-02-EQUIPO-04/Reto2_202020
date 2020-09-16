@@ -90,7 +90,7 @@ while True:
         print('La última película de la lista es:')
         controller.show_movie(cont, controller.casting_size(cont))
     elif int(input_) == 4:
-        production_company = input('Ingrese el nombre de la productora para saber sus películas: ').strip().capitalize()
+        production_company = input('Ingrese el nombre de la productora para saber sus películas: ').strip()
         producerinfo = controller.get_movies_by_producer(cont, production_company)
         print_producer_data(producerinfo)
     elif int(input_) == 0:
