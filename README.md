@@ -1,4 +1,5 @@
-# Reto 2
+
+# Reto #2
 
 ### Tablas de hash
 
