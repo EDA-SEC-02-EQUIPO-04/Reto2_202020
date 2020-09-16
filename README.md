@@ -1,9 +1,16 @@
-# Laboratorio #5
+# Reto 2
 
 ### Tablas de hash
 
-Realizado por el equipo 4 de la sección 2 del curso 
-Estructuras de Datos y Algoritmos de la Universidad de los Andes.
+## Objetivos 
+Diseñar un Tipo Abstracto de Datos (TAD) para modelar un catálogo
+de películas que permitirá:
+
+−Guardar en memoria principal la información de las películas y
+elenco.
+− Responder rápidamente a los requerimientos propuestos, entre los
+que se encuentran algunos ya implementados del Reto No.1.
+−Mejorar los tiempos de respuesta usando Maps y Tablas de Hash.
 
 ## Integrantes del equipo
 
