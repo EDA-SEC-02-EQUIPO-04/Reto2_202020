@@ -121,9 +121,9 @@ while True:
         producerinfo = controller.get_movies_by_producer(cont, production_company)
         print_producer_data(producerinfo)
     elif int(input_) == 5:
-        director = input('Ingrese el nombre del director: ').strip()
-        directorinfo = controller.get_director_movies(cont, director)
-        print_director_data(director)
+        director = input('Ingrese el nombre del director: ').strip().lower()
+        directorinfo = controller.getDirectorMovies(cont, director)
+        print_director_data(directorinfo)
     elif int(input_) == 6:
         country = input('Ingrese el nombre del país: ').strip()
         countryinfo = controller.get_movies_by_country(cont, country)

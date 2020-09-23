@@ -80,7 +80,8 @@ def new_director(name):
         dict: Diccionario del director con su nombre, sus películas y el promedio de las mismas. 
     """
     director = {'name': name,
-                'total_movies': 0,
+                'director_id': lt.newList('SINGLE_LINKED', compare_ids),
+                'total_movies':0,
                 'movies': lt.newList('SINGLE_LINKED', compareDirectors),
                 'average_rating': 0.0}
     return director
@@ -121,24 +122,12 @@ def add_details(catalog, movie):
     lt.addLast(catalog['details'], movie)
     mp.put(catalog['movies_ids'], movie['id'], movie)
 
-
-def add_director(catalog, director_name, movie):
-    directors = catalog['directors']
-    existdirector = mp.contains(directors, director_name)
-    if existdirector:
-        entry = mp.get(directors, director_name)
-        director = me.getValue(entry)
-    else:
-        director = new_director(director_name)
-        mp.put(directors, director_name, director)
-    lt.addLast(director['movies'], movie)
-    # Director vote average.
-    director_avg = director['average_rating']
-    movie_avg = movie['vote_average']
-    if director_avg == 0.0:
-        director['average_rating'] = float(movie_avg)
-    else:
-        director['average_rating'] = (director_avg + float(movie_avg)) / 2
+def addDirector(catalog, director):
+    """
+    Adiciona un director al catalogo
+    """
+    lt.addLast(catalog['casting'], director)
+    mp.put(catalog['directors'], director['director_name'], director)
 
 
 def add_movie_production_companies(catalog, producer_name, movie):
@@ -159,6 +148,40 @@ def add_movie_production_companies(catalog, producer_name, movie):
     else:
         producer['average_rating'] = (producer_avg + float(movie_avg)) / 2
 
+def addDirectorMovie(catalog, director, directors_id):
+    """
+    Agrega una relación entre una película y un director. 
+    """
+    directors = catalog['directors']
+    movies = catalog['movies_ids']
+    existdirector = mp.contains(directors, director)
+    movie_id = directors_id['id']
+    
+    if existdirector:  
+        entry = mp.get(directors, director)
+        entry_m = mp.get(movies, movie_id) 
+        directorr = me.getValue(entry)
+        movie = me.getValue(entry_m)
+    else:
+        directorr = new_director(director)
+        movie = new_director(director)
+        entry_m = mp.get(movies, movie_id) 
+        movie = me.getValue(entry_m)
+        mp.put(directors, director, directorr)
+    lt.addLast(directorr['director_id'], directors_id['id'])
+    lt.addLast(directorr['movies'], movie)
+    directorr['total_movies'] += 1
+
+    # Director vote average
+
+    director_avg = directorr['average_rating']
+    movie_av = mp.get(movies, movie_id)
+    movie_avg = movie_av['value']['vote_average']
+    
+    if director_avg == 0.0:
+        directorr['average_rating'] = float(movie_avg)
+    else:
+        directorr['average_rating'] = (director_avg + float(movie_avg)) / 2
 
 def add_movie_production_countries(catalog, country, movie):
     producer_countries = catalog['production_countries']
@@ -234,7 +257,6 @@ def show_director_data(director):
     Imprime las películas de un director.
     """
     if director:
-        print(director)
         print('Director de cine encontrado: ' + director['name'])
         print('Promedio: ' + str(director['average_rating']))
         print('Total de películas: ' + str(lt.size(director['movies'])))
@@ -278,14 +300,6 @@ def show_genre_data(genre):
     print('---------------------')
 
 
-def total_average(lista):
-    total = lt.size(lista)
-    votes = 0
-    for i in range(lt.size(lista)):
-        movie = lt.getElement(lista, i)
-        votes += float(movie)
-    total_vote_average = votes / total
-    return round(total_vote_average, 1)
 
 
 def get_movie_producer(catalog, producer_name):

@@ -94,36 +94,19 @@ def load_details(catalog, details_file):
                 model.add_movie_production_countries(catalog, country, movie)
 
 
-def load_director(catalog, directorfile):
-    dialect, dialect.delimiter = csv.excel, ';'
-    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect=dialect)
+def loadDirector(catalog, directorfile):
+    dialect, dialect.delimiter = csv.excel,';'
+    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect= dialect) 
     for dire in input_file:
         strip_dire = {}
         for key, value in dire.items():
             strip_dire[key.strip()] = value.strip()
         dire = strip_dire
-        model.add_director(catalog, dire)
-        directors_names = dire['director_name'].split(',')
+        model.addDirector(catalog, dire)
+        directors_names = dire['director_name'].split(',') 
         for directors in directors_names:
-            model.addDirector(catalog, directors.lower(), dire)
-
-
-def load_casting(catalog, casting_file):
-    """
-    Carga en el catalogo el elenco a partir de la información
-    del archivo de casting.
-    """
-    dialect, dialect.delimiter = csv.excel(), ';'
-    with open(casting_file, encoding='utf-8-sig') as input_file:
-        file_reader = csv.DictReader(input_file, dialect=dialect)
-        for movie in file_reader:
-            strip_movie = {}
-            for key, value in movie.items():
-                strip_movie[key.strip()] = value.strip()
-            movie = strip_movie
-            model.add_casting(catalog, movie)
-
-
+            if directors != 'none':
+                model.addDirectorMovie(catalog, directors.lower(), dire)
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
@@ -140,15 +123,6 @@ def casting_size(catalog):
 def show_movie(catalog, index):
     t1_start = process_time()  # tiempo inicial
     print(model.show_movie_data(catalog, index))
-    t1_stop = process_time()  # tiempo final
-    print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
-
-
-def production_companies(catalog, production):
-    t1_start = process_time()  # tiempo inicial
-    print('Las películas de la productora son: ')
-    average, size = get_movies_by_producer(catalog, production)
-    print('Tienen un promedio de ', average, ' y han producido ', size, ' películas')
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
 
