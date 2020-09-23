@@ -59,7 +59,7 @@ def print_producer_data(producer):
     """
     controller.show_producer_data(producer)
 
-    
+
 def print_director_data(director):
     """
     Imprime las películas de un director
@@ -73,7 +73,7 @@ def print_country_data(country):
     """
     controller.show_country_data(country)
 
-    
+
 def print_genre_data(genre_info):
     """
     - Imprime la lista de todas las películas asociadas a un género.
@@ -81,7 +81,6 @@ def print_genre_data(genre_info):
     - El promedio de votos del género.
     """
     controller.show_genre_data(genre_info)
-
 
 
 # ___________________________________________________
@@ -122,19 +121,19 @@ while True:
         producerinfo = controller.get_movies_by_producer(cont, production_company)
         print_producer_data(producerinfo)
     elif int(input_) == 5:
-        director = input('Ingrese el nombre del director: ').strip().lower()
-        directorinfo = controller.getDirectorMovies(cont, director)
+        director = input('Ingrese el nombre del director: ').strip()
+        directorinfo = controller.get_director_movies(cont, director)
         print_director_data(director)
     elif int(input_) == 6:
-        country = input('Ingrese el nombre del país: ').strip().lower()
+        country = input('Ingrese el nombre del país: ').strip()
         countryinfo = controller.get_movies_by_country(cont, country)
         print_country_data(country)
     elif int(input_) == 7:
-        t1_start = process_time()  # tiempo inicial
+        t1_start = process_time()
         genres = controller.search_genres(cont)
         for genre in genres:
-            genre_info = controller.get_movies_by_genre(cont, genre)
-            print_genre_data(genre_info)
+            genre_data = controller.get_movies_by_genre(cont, genre)
+            print_genre_data(genre_data)
         print('Tiempo de ejecución ', process_time() - t1_start, ' segundos')
     elif int(input_) == 0:
         sys.exit(0)
