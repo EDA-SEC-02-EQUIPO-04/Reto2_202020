@@ -59,7 +59,8 @@ def load_data(catalog, casting_file, details_file):
     """
     t1_start = process_time()  # tiempo inicial
     load_details(catalog, details_file)
-    load_casting(catalog, casting_file)
+    loadDirector(catalog, casting_file)
+    
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
 
@@ -81,25 +82,27 @@ def load_details(catalog, details_file):
             movie = strip_movie
             model.add_details(catalog, movie)
             producer_names = movie['production_companies'].split(",")
+            producer_countries = movie['production_countries'].split(',')
             for producer in producer_names:
-                model.add_movie_production_companies(catalog, producer, movie)
+                model.add_movie_production_companies(catalog, producer.lower(), movie)
+            for country in producer_countries:
+                model.add_movie_production_countries(catalog, country.lower(), movie)
+                        
+def loadDirector(catalog, directorfile):
+    dialect, dialect.delimiter = csv.excel,';'
+    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect= dialect) 
+    for dire in input_file:
+        strip_dire = {}
+        for key, value in dire.items():
+            strip_dire[key.strip()] = value.strip()
+        dire = strip_dire
+        model.addDirector(catalog, dire)
+        directors_names = dire['director_name'].split(',')
+        for directors in directors_names:
+            model.addDirectorMovie(catalog, directors.lower(), dire)
 
 
-def load_casting(catalog, casting_file):
-    """
-    Carga en el catalogo el elenco a partir de la información
-    del archivo de casting.
-    """
-    dialect, dialect.delimiter = csv.excel(), ';'
-    with open(casting_file, encoding='utf-8-sig') as input_file:
-        file_reader = csv.DictReader(input_file, dialect=dialect)
-        for movie in file_reader:
-            strip_movie = {}
-            for key, value in movie.items():
-                strip_movie[key.strip()] = value.strip()
-            movie = strip_movie
-            model.add_casting(catalog, movie)
-
+        
 
 # ___________________________________________________
 #  Funciones para consultas
@@ -137,9 +140,35 @@ def get_movies_by_producer(catalog, producer_name):
     producerinfo = model.get_movie_producer(catalog, producer_name)
     return producerinfo
 
+def getDirectorMovies(catalog, directorName):
+    """
+     Retorna las películas de una productora.
+    """
+    directorinfo = model.get_director_movies(catalog, directorName)
+    return directorinfo
+
+def get_movies_by_country(catalog, country_name):
+    """
+    Retorna las peliclas de un pais
+    """
+    countryInfo = model.get_movie_country(catalog, country_name)
+    return countryInfo
 
 def show_producer_data(producer):
     t1_start = process_time()  # tiempo inicial
     model.show_producer_data(producer)
+    t1_stop = process_time()  # tiempo final
+    print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
+
+def show_director_data(director):
+    t1_start = process_time()  # tiempo inicial
+    model.show_director_data(director)
+    t1_stop = process_time()  # tiempo final
+    print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
+
+def show_country_data(country):
+
+    t1_start = process_time()  # tiempo inicial
+    model.show_country_data(country)
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
