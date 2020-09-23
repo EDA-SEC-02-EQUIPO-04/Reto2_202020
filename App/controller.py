@@ -85,13 +85,13 @@ def load_details(catalog, details_file):
             producer_countries = movie['production_countries'].split(',')
             genres = movie['genres'].split(",")
             for producer in producer_names:
-                model.add_movie_production_companies(catalog, producer, movie)
+                model.add_movie_production_companies(catalog, producer.lower(), movie)
             for genre in genres:
                 genre = genre.split('|')
                 for subgenre in genre:
                     model.add_movie_genre(catalog, subgenre, movie)
             for country in producer_countries:
-                model.add_movie_production_countries(catalog, country, movie)
+                model.add_movie_production_countries(catalog, country.lower(), movie)
 
 
 def loadDirector(catalog, directorfile):
@@ -181,7 +181,10 @@ def show_country_data(country):
 
 
 def show_genre_data(genre_info):
+    t1_start = process_time()  # tiempo inicial
     model.show_genre_data(genre_info)
+    t1_stop = process_time()  # tiempo final
+    print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
 
 
 def search_genres(catalog):

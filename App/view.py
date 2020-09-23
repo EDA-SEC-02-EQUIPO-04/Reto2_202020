@@ -125,9 +125,9 @@ while True:
         directorinfo = controller.getDirectorMovies(cont, director)
         print_director_data(directorinfo)
     elif int(input_) == 6:
-        country = input('Ingrese el nombre del país: ').strip()
+        country = input('Ingrese el nombre del país: ').strip().lower()
         countryinfo = controller.get_movies_by_country(cont, country)
-        print_country_data(country)
+        print_country_data(countryinfo)
     elif int(input_) == 7:
         t1_start = process_time()
         genres = controller.search_genres(cont)

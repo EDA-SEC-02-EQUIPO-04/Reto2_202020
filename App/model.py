@@ -55,8 +55,10 @@ def new_catalog():
         'movies_ids': mp.newMap(5000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_ids),
         'production_companies': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_producers),
         'directors': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compareDirectors),
+        'directors_id': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compareDirectors),
         'production_countries': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_countries),
         'genres': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_genres),
+
 
     }
     return catalog
@@ -98,6 +100,7 @@ def new_producer_country(name):
     country = {'name': name,
                'movies': lt.newList('SINGLE_LINKED', compare_producers),
                'year': 0,
+               'average_rating':0.0,
                'director': None}
     return country
 
@@ -128,6 +131,7 @@ def addDirector(catalog, director):
     """
     lt.addLast(catalog['casting'], director)
     mp.put(catalog['directors'], director['director_name'], director)
+    mp.put(catalog['directors_id'], director['id'], director)
 
 
 def add_movie_production_companies(catalog, producer_name, movie):
@@ -184,18 +188,34 @@ def addDirectorMovie(catalog, director, directors_id):
         directorr['average_rating'] = (director_avg + float(movie_avg)) / 2
 
 def add_movie_production_countries(catalog, country, movie):
+
     producer_countries = catalog['production_countries']
+    directors = catalog['directors_id']
     existproducer = mp.contains(producer_countries, country)
+    movie_id = movie['id']
+
     if existproducer:
         entry = mp.get(producer_countries, country)
         producer = me.getValue(entry)
     else:
         producer = new_producer_country(country)
         mp.put(producer_countries, country, producer)
+        
     lt.addLast(producer['movies'], movie)
+    print(mp.get(directors, movie_id))
+    
 
+    # country vote average 
+
+    producer_avg = producer['average_rating']
+    movie_avg = movie['vote_average']
+    if producer_avg == 0.0:
+        producer['average_rating'] = float(movie_avg)
+    else:
+        producer['average_rating'] = (producer_avg + float(movie_avg)) / 2
 
 def add_movie_genre(catalog, genre_name, movie):
+
     genres = catalog['genres']
     existgenre = mp.contains(genres, genre_name)
     if existgenre:
@@ -268,7 +288,7 @@ def show_director_data(director):
         print('No se encontró el director')
 
 
-def show_producer_country(country):
+def show_country_data(country):
     """
     Imprime las películas de una productara.
     """
@@ -279,7 +299,7 @@ def show_producer_country(country):
         iterator = it.newIterator(country['movies'])
         while it.hasNext(iterator):
             movie = it.next(iterator)
-            print('Título: ' + movie['title'] + ' | Relase Date: ' + movie['relase_date'])
+            print('Título: ' + movie['title'] + ' | Relase Date: ' + movie['release_date'])
     else:
         print('No se encontró el país')
 
@@ -298,9 +318,6 @@ def show_genre_data(genre):
     print('Promedio: ' + str(genre['average_rating']))
     print('Total de películas: ' + str(lt.size(genre['movies'])))
     print('---------------------')
-
-
-
 
 def get_movie_producer(catalog, producer_name):
     """
