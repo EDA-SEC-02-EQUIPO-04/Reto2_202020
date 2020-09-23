@@ -53,7 +53,8 @@ def new_catalog():
         # 'producer_companies': mp.newMap(200, maptype='PROBING', loadfactor=10, comparefunction=compare_ids)
         # 'producer_companies': mp.newMap(4000, maptype='PROBING', loadfactor=0.5, comparefunction=compare_ids)
         'movies_ids': mp.newMap(5000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_ids),
-        'production_companies': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_producers)
+        'production_companies': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_producers),
+        'genres': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_genres)
     }
     return catalog
 
@@ -65,6 +66,15 @@ def new_producer(name):
     """
     producer = {'name': name, 'movies': lt.newList('SINGLE_LINKED', compare_producers), 'average_rating': 0}
     return producer
+
+
+def new_genre(name):
+    """
+    Crea una nueva estructura para modelar las películas de una compañia de producción
+    y su promedio de ratings
+    """
+    genre = {'name': name, 'movies': lt.newList('SINGLE_LINKED', compare_producers), 'average_rating': 0}
+    return genre
 
 
 # Funciones para agregar información al catálogo.
@@ -116,6 +126,25 @@ def add_movie_production_companies(catalog, producer_name, movie):
         producer['average_rating'] = (producer_avg + float(movie_avg)) / 2
 
 
+def add_movie_genre(catalog, genre_name, movie):
+    genres = catalog['genres']
+    existgenre = mp.contains(genres, genre_name)
+    if existgenre:
+        entry = mp.get(genres, genre_name)
+        genre = me.getValue(entry)
+    else:
+        genre = new_genre(genre_name)
+        mp.put(genres, genre_name, genre)
+    lt.addLast(genre['movies'], movie)
+    # Genre vote average.
+    genre_avg = genre['average_rating']
+    movie_avg = movie['vote_average']
+    if genre_avg == 0.0:
+        genre['average_rating'] = float(movie_avg)
+    else:
+        genre['average_rating'] = (genre_avg + float(movie_avg)) / 2
+
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -153,6 +182,22 @@ def show_producer_data(producer):
         print('No se encontró la productora')
 
 
+def show_genre_data(genre):
+    """
+    - Imprime la lista de todas las películas asociadas a un género.
+    - El total de películas.
+    - El promedio de votos del género.
+    """
+    iterator = it.newIterator(genre['movies'])
+    while it.hasNext(iterator):
+        movie = it.next(iterator)
+        print('Título: ' + movie['title'] + ' | Vote Average: ' + movie['vote_average'])
+    print('\nGénero(s) de películas a buscar: ' + genre['name'])
+    print('Promedio: ' + str(genre['average_rating']))
+    print('Total de películas: ' + str(lt.size(genre['movies'])))
+    print('---------------------')
+
+
 def total_average(lista):
     total = lt.size(lista)
     votes = 0
@@ -170,6 +215,16 @@ def get_movie_producer(catalog, producer_name):
     producer = mp.get(catalog['production_companies'], producer_name)
     if producer:
         return me.getValue(producer)
+    return None
+
+
+def get_genre_movies(catalog, genre):
+    """
+    Retorna las películas a partir del nombre del género.
+    """
+    genre_movies = mp.get(catalog['genres'], genre)
+    if genre_movies:
+        return me.getValue(genre_movies)
     return None
 
 
@@ -193,6 +248,16 @@ def productors_movies(catalog,production):
 """
 
 
+def search_genres(catalog, genres):
+    for index in range(len(genres)):
+        genres[index] = genres[index].capitalize()
+        existgenre = mp.contains(catalog['genres'], genres[index])
+        if not existgenre:
+            print('Un género no se encuentra. Intente de nuevo.')
+            return None
+    return genres
+
+
 # ==============================
 # Funciones de Comparacion
 # ==============================
@@ -207,6 +272,16 @@ def compare_ids(id_, tag):
 
 
 def compare_producers(keyname, producer):
+    proentry = me.getKey(producer)
+    if keyname == proentry:
+        return 0
+    elif keyname > proentry:
+        return 1
+    else:
+        return -1
+
+
+def compare_genres(keyname, producer):
     proentry = me.getKey(producer)
     if keyname == proentry:
         return 0

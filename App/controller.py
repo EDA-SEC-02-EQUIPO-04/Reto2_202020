@@ -81,8 +81,13 @@ def load_details(catalog, details_file):
             movie = strip_movie
             model.add_details(catalog, movie)
             producer_names = movie['production_companies'].split(",")
+            genres = movie['genres'].split(",")
             for producer in producer_names:
                 model.add_movie_production_companies(catalog, producer, movie)
+            for genre in genres:
+                genre = genre.split('|')
+                for subgenre in genre:
+                    model.add_movie_genre(catalog, subgenre, movie)
 
 
 def load_casting(catalog, casting_file):
@@ -138,8 +143,30 @@ def get_movies_by_producer(catalog, producer_name):
     return producerinfo
 
 
+def get_movies_by_genre(catalog, genre):
+    """
+     Retorna las películas de una productora.
+    """
+    genre_info = model.get_genre_movies(catalog, genre)
+    return genre_info
+
+
 def show_producer_data(producer):
     t1_start = process_time()  # tiempo inicial
     model.show_producer_data(producer)
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
+
+
+def show_genre_data(genre_info):
+    model.show_genre_data(genre_info)
+
+
+def search_genres(catalog):
+    genres = input('Ingrese el género. Si son varios, separe por comas: ')
+    genres = genres.replace(' ', '')
+    genres = genres.split(',')
+    genres = model.search_genres(catalog, genres)
+    if genres is None:
+        return search_genres(catalog)
+    return genres
