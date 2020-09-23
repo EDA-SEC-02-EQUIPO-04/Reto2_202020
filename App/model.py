@@ -98,10 +98,10 @@ def new_producer_country(name):
         dict: Diccionario del país con su nombre, sus películas y el año. 
     """
     country = {'name': name,
-               'movies': lt.newList('SINGLE_LINKED', compare_producers),
+               'movies': lt.newList('SINGLE_LINKED', compare_countries),
                'year': 0,
                'average_rating':0.0,
-               'director': None}
+               'director': lt.newList('SINGLE_LINKED', compareDirectors)}
     return country
 
 
@@ -196,14 +196,18 @@ def add_movie_production_countries(catalog, country, movie):
 
     if existproducer:
         entry = mp.get(producer_countries, country)
+        entry_d = mp.get(directors, movie_id)
         producer = me.getValue(entry)
+        director = me.getValue(entry_d)
     else:
         producer = new_producer_country(country)
+        director = new_producer_country(country)
+        entry_d = mp.get(directors, movie_id)
+        director = me.getValue(entry_d)  
         mp.put(producer_countries, country, producer)
         
     lt.addLast(producer['movies'], movie)
-    print(mp.get(directors, movie_id))
-    
+    lt.addLast(producer['director'], director)
 
     # country vote average 
 
@@ -218,6 +222,7 @@ def add_movie_genre(catalog, genre_name, movie):
 
     genres = catalog['genres']
     existgenre = mp.contains(genres, genre_name)
+
     if existgenre:
         entry = mp.get(genres, genre_name)
         genre = me.getValue(entry)
@@ -225,6 +230,7 @@ def add_movie_genre(catalog, genre_name, movie):
         genre = new_genre(genre_name)
         mp.put(genres, genre_name, genre)
     lt.addLast(genre['movies'], movie)
+
     # Genre vote average.
     genre_avg = genre['average_rating']
     movie_avg = movie['vote_average']
@@ -297,9 +303,12 @@ def show_country_data(country):
         print('Promedio: ' + str(country['average_rating']))
         print('Total de películas: ' + str(lt.size(country['movies'])))
         iterator = it.newIterator(country['movies'])
+        iterator_2 = it.newIterator(country['director'])
         while it.hasNext(iterator):
             movie = it.next(iterator)
-            print('Título: ' + movie['title'] + ' | Relase Date: ' + movie['release_date'])
+            while it.hasNext(iterator_2):
+                director = it.next(iterator_2)
+                print('Título: ' + movie['title'] + ' | Relase Date: ' + movie['release_date'] + '| Director: ' + director['director_name'])
     else:
         print('No se encontró el país')
 

@@ -58,6 +58,7 @@ def load_data(catalog, casting_file, details_file):
     Carga los datos de los archivos en el modelo
     """
     t1_start = process_time()  # tiempo inicial
+    loadDirector_id(catalog, casting_file)
     load_details(catalog, details_file)
     loadDirector(catalog, casting_file)
 
@@ -107,6 +108,17 @@ def loadDirector(catalog, directorfile):
         for directors in directors_names:
             if directors != 'none':
                 model.addDirectorMovie(catalog, directors.lower(), dire)
+
+def loadDirector_id(catalog, directorfile):
+    dialect, dialect.delimiter = csv.excel,';'
+    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect= dialect) 
+    for dire in input_file:
+        strip_dire = {}
+        for key, value in dire.items():
+            strip_dire[key.strip()] = value.strip()
+        dire = strip_dire
+        model.addDirector(catalog, dire)
+        
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
