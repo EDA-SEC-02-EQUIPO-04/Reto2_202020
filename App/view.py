@@ -59,7 +59,21 @@ def print_producer_data(producer):
     """
     controller.show_producer_data(producer)
 
+    
+def print_director_data(director):
+    """
+    Imprime las películas de un director
+    """
+    controller.show_director_data(director)
 
+
+def print_country_data(country):
+    """
+    Imprime las películas de un país
+    """
+    controller.show_country_data(country)
+
+    
 def print_genre_data(genre_info):
     """
     - Imprime la lista de todas las películas asociadas a un género.
@@ -67,6 +81,7 @@ def print_genre_data(genre_info):
     - El promedio de votos del género.
     """
     controller.show_genre_data(genre_info)
+
 
 
 # ___________________________________________________
@@ -78,6 +93,8 @@ def print_menu():
     print('2- Cargar datos de películas de los archivos csv.')
     print('3- Consultar información primera y última película.')
     print('4- Consultar películas de una productora')
+    print('5- Consultar películas de un director')
+    print('6- Consultar películas por país')
     print('7- Entender un género cinematográfico.')
     print('0- Salir.')
 
@@ -101,9 +118,17 @@ while True:
         print('La última película de la lista es:')
         controller.show_movie(cont, controller.casting_size(cont))
     elif int(input_) == 4:
-        production_company = input('Ingrese el nombre de la productora para saber sus películas: ').strip()
+        production_company = input('Ingrese el nombre de la productora para saber sus películas: ').lower().strip()
         producerinfo = controller.get_movies_by_producer(cont, production_company)
         print_producer_data(producerinfo)
+    elif int(input_) == 5:
+        director = input('Ingrese el nombre del director: ').strip().lower()
+        directorinfo = controller.getDirectorMovies(cont, director)
+        print_director_data(director)
+    elif int(input_) == 6:
+        country = input('Ingrese el nombre del país: ').strip().lower()
+        countryinfo = controller.get_movies_by_country(cont, country)
+        print_country_data(country)
     elif int(input_) == 7:
         t1_start = process_time()  # tiempo inicial
         genres = controller.search_genres(cont)
