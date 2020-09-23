@@ -214,9 +214,9 @@ def show_producer_country(country):
         iterator = it.newIterator(country['movies'])
         while it.hasNext(iterator):
             movie = it.next(iterator)
-            print('Título: ' + movie['title'] + ' | Vote Average: ' + movie['vote_average'])
+            print('Título: ' + movie['title'] + ' | Relase Date: ' + movie['relase_date'])
     else:
-        print('No se encontró la productora')
+        print('No se encontró el país')
 
 def total_average(lista):
     total = lt.size(lista)
