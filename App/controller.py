@@ -83,8 +83,13 @@ def load_details(catalog, details_file):
             model.add_details(catalog, movie)
             producer_names = movie['production_companies'].split(",")
             producer_countries = movie['production_countries'].split(',')
+            genres = movie['genres'].split(",")
             for producer in producer_names:
-                model.add_movie_production_companies(catalog, producer.lower(), movie)
+                model.add_movie_production_companies(catalog, producer, movie)
+            for genre in genres:
+                genre = genre.split('|')
+                for subgenre in genre:
+                    model.add_movie_genre(catalog, subgenre, movie)
             for country in producer_countries:
                 model.add_movie_production_countries(catalog, country.lower(), movie)
                         
@@ -102,7 +107,23 @@ def loadDirector(catalog, directorfile):
             model.addDirectorMovie(catalog, directors.lower(), dire)
 
 
-        
+
+def load_casting(catalog, casting_file):
+    """
+    Carga en el catalogo el elenco a partir de la información
+    del archivo de casting.
+    """
+    dialect, dialect.delimiter = csv.excel(), ';'
+    with open(casting_file, encoding='utf-8-sig') as input_file:
+        file_reader = csv.DictReader(input_file, dialect=dialect)
+        for movie in file_reader:
+            strip_movie = {}
+            for key, value in movie.items():
+                strip_movie[key.strip()] = value.strip()
+            movie = strip_movie
+            model.add_casting(catalog, movie)
+
+
 
 # ___________________________________________________
 #  Funciones para consultas
@@ -154,11 +175,20 @@ def get_movies_by_country(catalog, country_name):
     countryInfo = model.get_movie_country(catalog, country_name)
     return countryInfo
 
+def get_movies_by_genre(catalog, genre):
+    """
+     Retorna las películas de una productora.
+    """
+    genre_info = model.get_genre_movies(catalog, genre)
+    return genre_info
+
+
 def show_producer_data(producer):
     t1_start = process_time()  # tiempo inicial
     model.show_producer_data(producer)
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
+
 
 def show_director_data(director):
     t1_start = process_time()  # tiempo inicial
@@ -172,3 +202,18 @@ def show_country_data(country):
     model.show_country_data(country)
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
+
+
+def show_genre_data(genre_info):
+    model.show_genre_data(genre_info)
+
+
+def search_genres(catalog):
+    genres = input('Ingrese el género. Si son varios, separe por comas: ')
+    genres = genres.replace(' ', '')
+    genres = genres.split(',')
+    genres = model.search_genres(catalog, genres)
+    if genres is None:
+        return search_genres(catalog)
+    return genres
+

@@ -56,6 +56,8 @@ def new_catalog():
         'production_companies': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_producers),
         'directors':mp.newMap(1000, maptype='PROBING', loadfactor=0.4,comparefunction=compareDirectors),
         'production_countries': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_countries)
+        'genres': mp.newMap(1000, maptype='PROBING', loadfactor=0.4, comparefunction=compare_genres)
+
     }
     return catalog
 
@@ -95,6 +97,15 @@ def new_producer_country(name):
                'year': 0,
                'director': None}
     return country
+
+def new_genre(name):
+    """
+    Crea una nueva estructura para modelar las películas de una compañia de producción
+    y su promedio de ratings
+    """
+    genre = {'name': name, 'movies': lt.newList('SINGLE_LINKED', compare_producers), 'average_rating': 0}
+    return genre
+
 
 # Funciones para agregar información al catálogo.
 
@@ -149,7 +160,25 @@ def add_movie_production_countries(catalog, country, movie):
 
 
 
-    
+def add_movie_genre(catalog, genre_name, movie):
+    genres = catalog['genres']
+    existgenre = mp.contains(genres, genre_name)
+    if existgenre:
+        entry = mp.get(genres, genre_name)
+        genre = me.getValue(entry)
+    else:
+        genre = new_genre(genre_name)
+        mp.put(genres, genre_name, genre)
+    lt.addLast(genre['movies'], movie)
+    # Genre vote average.
+    genre_avg = genre['average_rating']
+    movie_avg = movie['vote_average']
+    if genre_avg == 0.0:
+        genre['average_rating'] = float(movie_avg)
+    else:
+        genre['average_rating'] = (genre_avg + float(movie_avg)) / 2
+
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -218,6 +247,22 @@ def show_producer_country(country):
     else:
         print('No se encontró el país')
 
+def show_genre_data(genre):
+    """
+    - Imprime la lista de todas las películas asociadas a un género.
+    - El total de películas.
+    - El promedio de votos del género.
+    """
+    iterator = it.newIterator(genre['movies'])
+    while it.hasNext(iterator):
+        movie = it.next(iterator)
+        print('Título: ' + movie['title'] + ' | Vote Average: ' + movie['vote_average'])
+    print('\nGénero(s) de películas a buscar: ' + genre['name'])
+    print('Promedio: ' + str(genre['average_rating']))
+    print('Total de películas: ' + str(lt.size(genre['movies'])))
+    print('---------------------')
+
+
 def total_average(lista):
     total = lt.size(lista)
     votes = 0
@@ -246,6 +291,7 @@ def get_director_movies(catalog, director_name):
         return me.getValue(director)
     return None
 
+
 def get_movie_country(catalog, countries):
     """
     Retorna las películas a partir del nombre de la productora
@@ -254,6 +300,26 @@ def get_movie_country(catalog, countries):
     if country:
         return me.getValue(country)
     return None
+
+            
+def get_genre_movies(catalog, genre):
+    """
+    Retorna las películas a partir del nombre del género.
+    """
+    genre_movies = mp.get(catalog['genres'], genre)
+    if genre_movies:
+        return me.getValue(genre_movies)
+    return None
+
+
+def search_genres(catalog, genres):
+    for index in range(len(genres)):
+        genres[index] = genres[index].capitalize()
+        existgenre = mp.contains(catalog['genres'], genres[index])
+        if not existgenre:
+            print('Un género no se encuentra. Intente de nuevo.')
+            return None
+    return genres
 
 
 # ==============================
@@ -295,3 +361,14 @@ def compare_countries(keyname, country):
         return 1
     else:
         return -1
+
+
+def compare_genres(keyname, producer):
+    proentry = me.getKey(producer)
+    if keyname == proentry:
+        return 0
+    elif keyname > proentry:
+        return 1
+    else:
+        return -1
+

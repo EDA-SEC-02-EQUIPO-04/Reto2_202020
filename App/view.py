@@ -25,6 +25,7 @@ import config
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from App import controller
+from time import process_time
 
 assert config
 
@@ -58,17 +59,31 @@ def print_producer_data(producer):
     """
     controller.show_producer_data(producer)
 
+    
 def print_director_data(director):
     """
     Imprime las películas de un director
     """
     controller.show_director_data(director)
 
+
 def print_country_data(country):
     """
     Imprime las películas de un país
     """
     controller.show_country_data(country)
+
+    
+def print_genre_data(genre_info):
+    """
+    - Imprime la lista de todas las películas asociadas a un género.
+    - El total de películas.
+    - El promedio de votos del género.
+    """
+    controller.show_genre_data(genre_info)
+
+
+
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -80,6 +95,7 @@ def print_menu():
     print('4- Consultar películas de una productora')
     print('5- Consultar películas de un director')
     print('6- Consultar películas por país')
+    print('7- Entender un género cinematográfico.')
     print('0- Salir.')
 
 
@@ -113,6 +129,13 @@ while True:
         country = input('Ingrese el nombre del país: ').strip().lower()
         countryinfo = controller.get_movies_by_country(cont, country)
         print_country_data(country)
+    elif int(input_) == 7:
+        t1_start = process_time()  # tiempo inicial
+        genres = controller.search_genres(cont)
+        for genre in genres:
+            genre_info = controller.get_movies_by_genre(cont, genre)
+            print_genre_data(genre_info)
+        print('Tiempo de ejecución ', process_time() - t1_start, ' segundos')
     elif int(input_) == 0:
         sys.exit(0)
     else:
