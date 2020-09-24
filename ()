@@ -1,9 +1,0 @@
-# with '#' will be ignored, and an empty message aborts the commit.
-#
-# h master
-# Your branch is up to date with 'origin/master'.
-#
-# Changes to be committed:
-#	modified:   App/controller.py
-#	modified:   App/model.py
-#

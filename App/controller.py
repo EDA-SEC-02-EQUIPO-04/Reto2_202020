@@ -96,29 +96,31 @@ def load_details(catalog, details_file):
 
 
 def loadDirector(catalog, directorfile):
-    dialect, dialect.delimiter = csv.excel,';'
-    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect= dialect) 
+    dialect, dialect.delimiter = csv.excel, ';'
+    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect=dialect)
     for dire in input_file:
         strip_dire = {}
         for key, value in dire.items():
             strip_dire[key.strip()] = value.strip()
         dire = strip_dire
         model.addDirector(catalog, dire)
-        directors_names = dire['director_name'].split(',') 
+        directors_names = dire['director_name'].split(',')
         for directors in directors_names:
             if directors != 'none':
                 model.addDirectorMovie(catalog, directors.lower(), dire)
 
+
 def loadDirector_id(catalog, directorfile):
-    dialect, dialect.delimiter = csv.excel,';'
-    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect= dialect) 
+    dialect, dialect.delimiter = csv.excel, ';'
+    input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect=dialect)
     for dire in input_file:
         strip_dire = {}
         for key, value in dire.items():
             strip_dire[key.strip()] = value.strip()
         dire = strip_dire
         model.addDirector(catalog, dire)
-        
+
+
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
@@ -159,8 +161,8 @@ def get_movies_by_country(catalog, country_name):
     """
     Retorna las peliclas de un pais
     """
-    countryInfo = model.get_movie_country(catalog, country_name)
-    return countryInfo
+    country_info = model.get_movie_country(catalog, country_name)
+    return country_info
 
 
 def get_movies_by_genre(catalog, genre):
