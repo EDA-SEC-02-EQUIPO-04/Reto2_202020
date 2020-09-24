@@ -96,7 +96,7 @@ def load_details(catalog, details_file):
 
 
 def loadDirector(catalog, directorfile):
-    dialect, dialect.delimiter = csv.excel, ';'
+    dialect, dialect.delimiter = csv.excel(), ';'
     input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect=dialect)
     for dire in input_file:
         strip_dire = {}
@@ -111,7 +111,7 @@ def loadDirector(catalog, directorfile):
 
 
 def loadDirector_id(catalog, directorfile):
-    dialect, dialect.delimiter = csv.excel, ';'
+    dialect, dialect.delimiter = csv.excel(), ';'
     input_file = csv.DictReader(open(directorfile, encoding='utf-8-sig'), dialect=dialect)
     for dire in input_file:
         strip_dire = {}
