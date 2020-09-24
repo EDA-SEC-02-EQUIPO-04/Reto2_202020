@@ -66,7 +66,12 @@ def print_director_data(director):
     """
     controller.show_director_data(director)
 
-
+def print_actor_data(actor):
+    """
+    Imprime las películas de un actor
+    """
+    controller.show_actor_data(actor)
+    
 def print_country_data(country):
     """
     Imprime las películas de un país
@@ -125,10 +130,14 @@ while True:
         directorinfo = controller.getDirectorMovies(cont, director)
         print_director_data(directorinfo)
     elif int(input_) == 6:
+        actor = input('Ingrese el nombre del actor: ').strip().lower()
+        actorinfo = controller.get_movie_actor(cont, actor)
+        print_actor_data(actorinfo)
+    elif int(input_) == 7:
         country = input('Ingrese el nombre del país: ').strip().lower()
         countryinfo = controller.get_movies_by_country(cont, country)
         print_country_data(countryinfo)
-    elif int(input_) == 7:
+    elif int(input_) == 8:
         t1_start = process_time()
         genres = controller.search_genres(cont)
         for genre in genres:
