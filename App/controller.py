@@ -120,7 +120,46 @@ def loadDirector_id(catalog, directorfile):
         dire = strip_dire
         model.addDirector_id(catalog, dire)
 
+def load_actor(catalog, actorfile):
+    dialect, dialect.delimiter = csv.excel(),';'
+    input_file = csv.DictReader(open(actorfile, encoding='utf-8-sig'), dialect= dialect) 
+    for Act in input_file:
+        strip_Act = {}
+        for key, value in Act.items():
+            strip_Act[key.strip()] = value.strip()
+        Act = strip_Act
+        model.add_actor(catalog, Act)
+        actors_names1 = Act['actor1_name'].split(',') 
+        for actors in actors_names1:
+            if actors != 'none':
+                model.add_movie_actors(catalog, actors.lower(), Act)
+        actors_names2 = Act['actor2_name'].split(',') 
+        for actors in actors_names2:
+            if actors != 'none':
+                model.add_movie_actors(catalog, actors.lower(), Act)
+        actors_names3 = Act['actor3_name'].split(',') 
+        for actors in actors_names3:
+            if actors != 'none':
+                model.add_movie_actors(catalog, actors.lower(), Act)
+        actors_names4 = Act['actor4_name'].split(',') 
+        for actors in actors_names4:
+            if actors != 'none':
+                model.add_movie_actors(catalog, actors.lower(), Act)
+        actors_names5 = Act['actor5_name'].split(',') 
+        for actors in actors_names5:
+            if actors != 'none':
+                model.add_movie_actors(catalog, actors.lower(), Act)
+        
 
+def load_actor_id(catalog, actorfile):
+    dialect, dialect.delimiter = csv.excel(),';'
+    input_file = csv.DictReader(open(actorfile, encoding='utf-8-sig'), dialect= dialect) 
+    for Actor in input_file:
+        strip_Actor = {}
+        for key, value in Actor.items():
+            strip_Actor[key.strip()] = value.strip()
+        Actor = strip_Actor
+        model.add_actor(catalog, Actor)
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
@@ -156,7 +195,13 @@ def getDirectorMovies(catalog, directorName):
     directorinfo = model.get_director_movies(catalog, directorName)
     return directorinfo
 
-
+def get_movies_by_actor (catalog, actorName):
+    """
+    Retorna las peliculas de un director
+    """
+    actorInfo = model.get_movie_actor(catalog, actorName)
+    return actorInfo
+   
 def get_movies_by_country(catalog, country_name):
     """
     Retorna las peliclas de un pais
@@ -185,7 +230,12 @@ def show_director_data(director):
     model.show_director_data(director)
     t1_stop = process_time()  # tiempo final
     print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
-
+    
+def show_actor_data(actor):
+    t1_start = process_time()  # tiempo inicial
+    model.show_actor_data(actor)
+    t1_stop = process_time()  # tiempo final
+    print('Tiempo de ejecución ', t1_stop - t1_start, ' segundos')
 
 def show_country_data(country):
     t1_start = process_time()  # tiempo inicial
